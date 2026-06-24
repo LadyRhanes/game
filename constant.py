@@ -1,11 +1,13 @@
 characters=[{
   "name": "Jonas",
   "secret":"killed the host",
-  "deflects_about":"thinks he got away with it,later guilty conscience and confesses"
+  "deflects_about":"thinks he got away with it,later guilty conscience and confesses",
+  
 }, {
   "name": "Rachel",
   "secret":"sham marriage,loves a commoner",
-  "deflects_about":"doesn't want the family pressure to be exposed"
+  "deflects_about":"doesn't want the family pressure to be exposed",
+  "personality": "shy, introverted, tends to avoid confrontation and prefers to keep to herself. She's deeply affected by the secrets and lies surrounding her, which creates a sense of isolation and anxiety."
 },{
   "name":"Nick",
   "secret":"was bullied by the host,best-friend and love-hate girl",
@@ -20,11 +22,13 @@ characters=[{
   },{
     "name":"Camilla",
     "secret":"affair with host",
-    "deflects_about":"protecting herself and her marriage"
+    "deflects_about":"protecting herself and her marriage",
+    "personality": "calm, composed, polite, measured, speaks in a soft voice, doesn't raise her voice or get flustered. She has a quiet confidence and is very self-assured. She doesn't get defensive or angry when confronted but breaks down when the affair is revealed, showing a side of her that is vulnerable and emotional. She has a strong sense of self-preservation and will do whatever it takes to protect herself and her marriage."
   },{
     "name":"William",
     "secret":"knows about the affair,is gay,had feelings for the host",
-    "deflects_about":"hiding his sexuality and heartbreak"
+    "deflects_about":"hiding his sexuality and heartbreak",
+    "personality": "reserved, polite, and formal, speaks in a measured tone, doesn't raise his voice or get flustered. He has a quiet confidence and is very self-assured. He doesn't get defensive or angry when confronted but breaks down once he admits to player whatever he heard on terrace revealing he is gay and had feelings for host from some time."
   },{
     "name":"Marcus",
     "secret":"was a bully, killed by best-friend and loves th couple-wife"

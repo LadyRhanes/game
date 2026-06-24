@@ -1,5 +1,14 @@
 from state import GameState
 from constant import characters, unlock_rules,location_rules,clues
+from prompt_builder import build_system_prompt
+from prompt_builder import build_system_prompt
+from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+import state
+
+llm = ChatOllama(model="qwen2.5:7b")
+
 def check_location_unlocked(location: str, state: GameState) -> bool:
     rule = location_rules.get(location)
     if rule is None:
@@ -73,18 +82,84 @@ def load_game(state: GameState) -> GameState:
         "ending_triggered": False,
         "player_revelations": {},
         "player_suspicions": {},
+        "current_suspect": "",
+        "next_action": "",
+        "current_location": "",
+
 
     }
 def investigation_hub(state: GameState) -> GameState:
     available_suspects = state["unlocked_suspects"]
     available_locations = [
         loc for loc, rule in location_rules.items()
-        if rule is None or check_location_unlocked(loc, state)
+        if check_location_unlocked(loc, state)
     ]
     
-    # for now just print options, frontend will handle this later
     print("\n--- INVESTIGATION HUB ---")
-    print(f"Suspects you can talk to: {available_suspects}")
-    print(f"Locations you can visit: {available_locations}")
+    print(f"Suspects: {available_suspects}")
+    print(f"Locations: {available_locations}")
+    print("\nType a suspect name to interrogate or a location to examine.")
     
+    choice = input("\nYour choice: ").strip()
+    
+    if choice in available_suspects:
+        state["current_suspect"] = choice
+        state["next_action"] = "interrogate"
+    elif choice in available_locations:
+        state["current_location"] = choice
+        state["next_action"] = "examine"
+    else:
+        print("Invalid choice, try again.")
+        state["next_action"] = "hub"  # loop back
+
+       
+
+    print("\nType a suspect name, location, or 'quit' to end the game.")
+    choice = input("\nYour choice: ").strip()
+     if choice.lower() == "quit":
+        state["next_action"] = "end"
+
+    
+         
+    
+    return state
+
+def interrogate_suspect( state: GameState) -> GameState:
+    suspect_name = state["current_suspect"]
+    if suspect_name not in state["unlocked_suspects"]:
+        print(f"{suspect_name} is not available to talk to yet.")
+        return state
+    
+    # get or create conversation history for this suspect
+    if suspect_name not in state["conversation_histories"]:
+        system_prompt = build_system_prompt(suspect_name, state)
+        state["conversation_histories"][suspect_name] = [
+            SystemMessage(content=system_prompt)
+        ]
+    
+    conversation = state["conversation_histories"][suspect_name]
+    
+    # conversation loop
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() in ["quit", "leave", "exit"]:
+            break
+        
+        conversation.append(HumanMessage(content=user_input))
+        response = llm.invoke(conversation)
+        conversation.append(AIMessage(content=response.content))
+        print(f"{suspect_name}: {response.content}\n")
+    
+    # save conversation history back to state
+    state["conversation_histories"][suspect_name] = conversation
+    
+    # increment count after conversation ends
+    state["interrogation_counts"][suspect_name] += 1
+    
+    return state
+
+
+def examine_location(state: GameState) -> GameState:
+    location = state.get("current_location", "")
+    print(f"\nYou examine {location}... nothing yet.")
     return state
