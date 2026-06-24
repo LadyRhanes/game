@@ -116,7 +116,7 @@ def investigation_hub(state: GameState) -> GameState:
 
     print("\nType a suspect name, location, or 'quit' to end the game.")
     choice = input("\nYour choice: ").strip()
-     if choice.lower() == "quit":
+    if choice.lower() == "quit":
         state["next_action"] = "end"
 
     
@@ -161,5 +161,24 @@ def interrogate_suspect( state: GameState) -> GameState:
 
 def examine_location(state: GameState) -> GameState:
     location = state.get("current_location", "")
-    print(f"\nYou examine {location}... nothing yet.")
+    if not location:
+        print("No location selected.")
+        return state
+    
+    if location not in state["locations_visited"]:
+        state["locations_visited"].append(location)
+    
+    # find if any clue is located here
+    clue_found = None
+    for clue_name, clue_data in clues.items():
+        if clue_data["found_at"] == location:
+            clue_found = clue_name
+            break
+    
+    if clue_found and clue_found not in state["clues_found"]:
+        state = process_clue_found(clue_found, state)
+        print(f"\nYou find something: {clues[clue_found]['description']}")
+    else:
+        print(f"\nYou look around {location}... nothing new here.")
+    
     return state
