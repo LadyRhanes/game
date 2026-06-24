@@ -15,7 +15,7 @@ def check_location_unlocked(location: str, state: GameState) -> bool:
         return True
     
     if "interrogated" in rule:
-        return state["interrogation_counts"].get(rule["interrogated"], 0) >= rule.get("min_times", 0)
+        return state["interrogation_counts"].get(rule["interrogated"], 0) >= rule.get("min_times", 1)
     
     return False
 
@@ -98,11 +98,13 @@ def investigation_hub(state: GameState) -> GameState:
     print("\n--- INVESTIGATION HUB ---")
     print(f"Suspects: {available_suspects}")
     print(f"Locations: {available_locations}")
-    print("\nType a suspect name to interrogate or a location to examine.")
+    print("\nType a suspect name, location, or 'quit' to end.")
     
     choice = input("\nYour choice: ").strip()
     
-    if choice in available_suspects:
+    if choice.lower() == "quit":
+        state["next_action"] = "end"
+    elif choice in available_suspects:
         state["current_suspect"] = choice
         state["next_action"] = "interrogate"
     elif choice in available_locations:
@@ -110,17 +112,7 @@ def investigation_hub(state: GameState) -> GameState:
         state["next_action"] = "examine"
     else:
         print("Invalid choice, try again.")
-        state["next_action"] = "hub"  # loop back
-
-       
-
-    print("\nType a suspect name, location, or 'quit' to end the game.")
-    choice = input("\nYour choice: ").strip()
-    if choice.lower() == "quit":
-        state["next_action"] = "end"
-
-    
-         
+        state["next_action"] = "hub"
     
     return state
 
